@@ -1,13 +1,14 @@
 ---
 title: "On Asymptotic Distribution of Expectation-Maximization estimators"
 author: "Sihyung Park and Sohyeon Kim"
-output: html_document
+output: 
+  bookdown::html_document2: default
 bibliography: biblio.bib
 ---
 
 # 1. Introduction
 
-In the second chapter of the textboot [@esi], as a method of solving likelihood equation, expectation-maximization was introduced. The rationale of the EM algorithm is to introduce a latent variable $\bf Z$ to maximize a complex likelihood $L(\theta; \bf Y)$. By doing so, the complete data likelihood $L_\text{C}(\theta; \bf Y, \bf Z)$ becomes more accessible form, sometimes even leads to analytic forms of estimators.
+In the second chapter of the textboot [@esi], as a method of solving likelihood equation, expectation-maximization was introduced. The rationale of the EM algorithm is to introduce a latent variable $\mathbf Z$ to maximize a complex likelihood $L(\theta; \mathbf Y)$. By doing so, the complete data likelihood $L_\text{C}(\theta; \mathbf Y, \mathbf Z)$ becomes more accessible form, sometimes even leads to analytic forms of estimators.
 
 However, unlike other methods that are introduced in the same chapter, estimators from EM algorithm were deemed deterministic, and only the greedieness of the algorithm was briefly covered.
 
@@ -20,17 +21,17 @@ The rest of the post is organized as follows. In section 2, we review the basics
 # 2. The Expectation-Maximization Algorithm
 
 ## 2.1. Ordinary EM
-Suppose that $\bf Y = (Y_1,\cdots,Y_n)$ is an IID sample of size $n$ from a density $f(y; \boldsymbol{\theta})$, $\boldsymbol{\theta} \in \mathbb R^d$. The log-likelihood becomes
+Suppose that $\mathbf Y = (Y_1,\cdots,Y_n)$ is an IID sample of size $n$ from a density $f(y; \boldsymbol{\theta})$, $\boldsymbol{\theta} \in \mathbb R^d$. The log-likelihood becomes
 $$\ell(\boldsymbol{\theta}) = \sum_{i=1}^n \log f(y_i;\boldsymbol{\theta}).$$
-We assume that there exist latent variable $\bf Z=(Z_1, \cdots, Z_n)$ and the complete data $\{(X_1, Z_1), \cdots, (X_n, Z_n)\}$ is in fact randomly generated from a joint density $h(y, z; \boldsymbol{\theta})$. In this setting, the complete data log-likelihood is given as
+We assume that there exist latent variable $\mathbf Z=(Z_1, \cdots, Z_n)$ and the complete data $\{(X_1, Z_1), \cdots, (X_n, Z_n)\}$ is in fact randomly generated from a joint density $h(y, z; \boldsymbol{\theta})$. In this setting, the complete data log-likelihood is given as
 $$ \ell_C(\boldsymbol{\theta}) = \sum_{i=1}^n \log h(y_i, z_i; \boldsymbol{\theta}).$$
 To derive a (possibly local) maximizer $\hat{\boldsymbol{\theta}}$ of $\ell(\boldsymbol{\theta})$, we use the fact that
 $$
-\frac 1 n \left( \ell(\boldsymbol{\theta}) - \ell(\boldsymbol{\theta}') \right) \ge \mathbb E_{\boldsymbol{\theta}'} \left[ \ell_C(\boldsymbol{\theta}) | \bf Y= \bf y \right] -c
+\frac 1 n \left( \ell(\boldsymbol{\theta}) - \ell(\boldsymbol{\theta}') \right) \ge \mathbb E_{\boldsymbol{\theta}'} \left[ \ell_C(\boldsymbol{\theta}) | \mathbf Y= \mathbf y \right] -c
 $$
-for some constant $c$ that depends only on $\bf y$ and $\boldsymbol{\theta}'$. This inequality can be acheived by applying Jensen's inequality. Thus, updating the value of $\boldsymbol{\theta}'$ to be that maximizes $Q_n(\boldsymbol{\theta};\boldsymbol{\theta}') := E_{\boldsymbol{\theta}'} \left[ \ell_C(\boldsymbol{\theta}) | \bf Y= \bf y \right]$, it will increase the value of the log-likelihood as a result. 
+for some constant $c$ that depends only on $\mathbf y$ and $\boldsymbol{\theta}'$. This inequality can be acheived by applying Jensen's inequality. Thus, updating the value of $\boldsymbol{\theta}'$ to be that maximizes $Q_n(\boldsymbol{\theta};\boldsymbol{\theta}') := E_{\boldsymbol{\theta}'} \left[ \ell_C(\boldsymbol{\theta}) | \mathbf Y= \mathbf y \right]$, it will increase the value of the log-likelihood as a result. 
 
-The ordinary EM algorithm is defined as Algorithm \ref{alg:em1}. It is proved in [@esi] that the algorithm is greedy. That is, $\ell(\boldsymbol{\theta}^{(t+1)}) \ge \ell(\boldsymbol{\theta}^{(t)})$ for all $t$.
+The ordinary EM algorithm is defined as Algorithm 1. It is proved in [@esi] that the algorithm is greedy. That is, $\ell(\boldsymbol{\theta}^{(t+1)}) \ge \ell(\boldsymbol{\theta}^{(t)})$ for all $t$.
 
 ******
 **Algorithm 1**:  Ordinary EM
@@ -40,7 +41,7 @@ The ordinary EM algorithm is defined as Algorithm \ref{alg:em1}. It is proved in
 
 **for** $t=0$ to $T-1$ **do**
 
-|       **M-Step**: Evaluate $Q_n(\boldsymbol{\theta};\boldsymbol{\theta}^{(t)}) = E_{\boldsymbol{\theta}'} \left[ \ell_C(\boldsymbol{\theta}) | \bf Y= \bf y \right]$
+|       **M-Step**: Evaluate $Q_n(\boldsymbol{\theta};\boldsymbol{\theta}^{(t)}) = E_{\boldsymbol{\theta}'} \left[ \ell_C(\boldsymbol{\theta}) | \mathbf Y= \mathbf y \right]$
 
 |       **E-Step**: $\boldsymbol{\theta}^{(t+1)} \gets \arg\max_{\boldsymbol{\theta}} Q_n(\boldsymbol{\theta};\boldsymbol{\theta}^{(t)})$
 
@@ -63,7 +64,7 @@ The ordinary EM algorithm is defined as Algorithm \ref{alg:em1}. It is proved in
 		\end{cases}
 \end{align*}
 
-The modified EM is provided as in Algorithm \ref{alg:em2}. Notice that if $\hat s = d$, then the algorithm is simplfied to ordinary EM. This allows us to use the statistical properties from Algorithm \ref{alg:em2} directly to ordinary EM estimators.
+The modified EM is provided as in Algorithm 2. Notice that if $\hat s = d$, then the algorithm is simplfied to ordinary EM. This allows us to use the statistical properties from Algorithm 2 directly to ordinary EM estimators.
 
 ******
 **Algorithm 2**:  High-dimensional sparse EM
@@ -75,7 +76,7 @@ The modified EM is provided as in Algorithm \ref{alg:em2}. Notice that if $\hat 
 
 **for** $t=0$ to $T-1$ **do**
 
-|       **M-Step**: Evaluate $Q_n(\boldsymbol{\theta};\boldsymbol{\theta}^{(t)}) = E_{\boldsymbol{\theta}'} \left[ \ell_C(\boldsymbol{\theta}) | \bf Y= \bf y \right]$
+|       **M-Step**: Evaluate $Q_n(\boldsymbol{\theta};\boldsymbol{\theta}^{(t)}) = E_{\boldsymbol{\theta}'} \left[ \ell_C(\boldsymbol{\theta}) | \mathbf Y= \mathbf y \right]$
 
 |       **E-Step**: $\boldsymbol{\theta}^{(t+0.5)} \gets \arg\max_{\boldsymbol{\theta}} Q_n(\boldsymbol{\theta};\boldsymbol{\theta}^{(t)})$
 
@@ -100,13 +101,13 @@ For simplicity, we let block components of any matrix $A$ by
 	\end{pmatrix},\\
  	A_{11} \in \mathbb{R}^{r\times r},~ A_{12} \in \mathbb{R}^{r\times (d-r)},~ A_{21} \in \mathbb{R}^{(d-r)\times r},~ A_{22} \in \mathbb{R}^{(d-r)\times (d-r)},
  \end{gather*}
- and subvector of any vector $\bf a$ by
+ and subvector of any vector $\mathbf a$ by
   \begin{gather*}
-	\bf a = \begin{bmatrix}
-		\bf a_1 \\
-		\bf a_2
+	\mathbf a = \begin{bmatrix}
+		\mathbf a_1 \\
+		\mathbf a_2
 	\end{bmatrix},~
-	\bf a_1 \in \mathbb{R}^r,~ \bf a_2 \in \mathbb{R}^{(d-r)}.
+	\mathbf a_1 \in \mathbb{R}^r,~ \mathbf a_2 \in \mathbb{R}^{(d-r)}.
  \end{gather*}
  
 
@@ -126,7 +127,7 @@ T_S = \sqrt n S_n(\tilde{\boldsymbol{\theta}}, \lambda)\left\{ \begin{bmatrix}
 	\end{bmatrix}^T
 	\right\}^{-1/2},
 $$
-where $\tilde{\boldsymbol{\theta}} = (0, \hat{\boldsymbol{\theta}}_2)^T$, $\hat{\boldsymbol{\theta}}_2$ is a part of the estimator from Algorithm \ref{alg:em2}, 
+where $\tilde{\boldsymbol{\theta}} = (0, \hat{\boldsymbol{\theta}}_2)^T$, $\hat{\boldsymbol{\theta}}_2$ is a part of the estimator from Algorithm 2, 
 \begin{gather*}
 	S_n(\boldsymbol{\theta}, \lambda) = \left[ \nabla_1 Q_n(\boldsymbol{\theta}, \boldsymbol{\theta}) \right]_1 - W(\boldsymbol{\theta}, \lambda)^T \left[ \nabla_1 Q_n(\boldsymbol{\theta}, \boldsymbol{\theta}) \right]_2,\\
 	W(\boldsymbol{\theta}, \lambda) = \text{argmin}_{W \in \mathbb{R}^{(d-r)\times r}}\|W\|_{1,1}\\
@@ -190,21 +191,21 @@ T_W = \sqrt n \left( h(\hat{\boldsymbol{\theta}}, \lambda) - \boldsymbol{\theta}
 $$
 where $h(\hat{\boldsymbol{\theta}}) = \hat{\boldsymbol{\theta}} - \left\{ \hat V_n(\hat{\boldsymbol{\theta}}) \right\}^{-1} \nabla_1 Q_n(\hat{\boldsymbol{\theta}}, \hat{\boldsymbol{\theta}})$
 
-By using lemma \ref{lemma:3.1}, we can further simplify $T_S$ and $T_W$ as the following familiar forms:
+By using lemma \@ref(lemma:3.1), we can further simplify $T_S$ and $T_W$ as the following familiar forms:
 \begin{align}
-	T_S &= \frac 1 {\sqrt n} S(\bf Y; \boldsymbol{\theta}_0)\left\{
+	T_S &= \frac 1 {\sqrt n} S(\mathbf Y; \boldsymbol{\theta}_0)\left\{
 	\hat I({\boldsymbol{\theta}}_0) 
-	\right\}^{-1/2}, \label{eq:1}\\
-	T_W &= \sqrt n \left( \hat{\boldsymbol{\theta}} - \boldsymbol{\theta}_0 - \frac 1 n \hat I^{-1}(\hat{\boldsymbol{\theta}}) S(\bf Y; \hat{\boldsymbol{\theta}}) \right)
+	\right\}^{-1/2}, (\#eq:1)\\
+	T_W &= \sqrt n \left( \hat{\boldsymbol{\theta}} - \boldsymbol{\theta}_0 - \frac 1 n \hat I^{-1}(\hat{\boldsymbol{\theta}}) S(\mathbf Y; \hat{\boldsymbol{\theta}}) \right)
 	\left\{
 	\hat I(\hat{\boldsymbol{\theta}}) 
-	\right\}^{1/2} \label{eq:2}\\
+	\right\}^{1/2} (\#eq:2)\\
 		&\stackrel{\text{mle}}{=} \sqrt n \left( \hat{\boldsymbol{\theta}} - \boldsymbol{\theta}_0 \right)
 	\left\{
 	\hat I(\hat{\boldsymbol{\theta}}) 
 	\right\}^{1/2},
 \end{align}
-where $S(\bf Y; \boldsymbol{\theta}) = \nabla \ell_n(\boldsymbol{\theta})$ is the ordinary score function and $\hat I(\boldsymbol{\theta}) = \hat V_n(\boldsymbol{\theta})$ to emphasize its link with the information matrix $I(\boldsymbol{\theta})$. The last equality holds if $\hat{\boldsymbol{\theta}}$ is the global maximizer.
+where $S(\mathbf Y; \boldsymbol{\theta}) = \nabla \ell_n(\boldsymbol{\theta})$ is the ordinary score function and $\hat I(\boldsymbol{\theta}) = \hat V_n(\boldsymbol{\theta})$ to emphasize its link with the information matrix $I(\boldsymbol{\theta})$. The last equality holds if $\hat{\boldsymbol{\theta}}$ is the global maximizer.
 
 ## 3.4. Sketch of the proof of asymptotic normality
 
@@ -232,7 +233,7 @@ and $I^{11}(\boldsymbol{\theta}_0)$, respectively.
 
 
 ### 3.4.1. Score-type statistic
-Lemm \ref{lemma:3.1} implies that it is sufficient to show that $\sqrt n S_n(\tilde{\boldsymbol{\theta}}, \lambda)$ asymptotically follows $N \left(0, \left[ I^{11}(\boldsymbol{\theta}_0) \right]^{-1} \right)$. Note again that 
+Lemm \@ref(lemma:3.1) implies that it is sufficient to show that $\sqrt n S_n(\tilde{\boldsymbol{\theta}}, \lambda)$ asymptotically follows $N \left(0, \left[ I^{11}(\boldsymbol{\theta}_0) \right]^{-1} \right)$. Note again that 
 \begin{align*}
 	S_n(\tilde{\boldsymbol{\theta}}, \lambda)
 	 &= \left[ \nabla_1 Q_n(\tilde{\boldsymbol{\theta}}, \tilde{\boldsymbol{\theta}}) \right]_1 - W(\tilde{\boldsymbol{\theta}}, \lambda)^T \left[ \nabla_1 Q_n(\tilde{\boldsymbol{\theta}}, \tilde{\boldsymbol{\theta}}) \right]_2\\
@@ -324,7 +325,7 @@ This results in
 
 
 ## 3.5. Regularity conditions
-For clarity, we did not mention what conditions are needed for asymptotic normality of $T_S$ and $T_W$ to hold. The following conditions \ref{cond:1}~\ref{cond:4} and assumption \ref{assm:1} should be met.
+For clarity, we did not mention what conditions are needed for asymptotic normality of $T_S$ and $T_W$ to hold. The following conditions \@ref(cond:1)~\@ref(cond:4) and assumption \@ref(assm:1) should be met.
 
 **Condition 1** (Parameter estimation).
 $$\|\hat{\boldsymbol{\theta}} - \boldsymbol{\theta}_0\|_1 = O_{\mathbb{P}}(\zeta^{EM}),$$
@@ -363,17 +364,17 @@ $$
 where $s_{W_0} = \|W_0\|_0$.
 
 
-We will check for specific models if these conditions are reasonable in practice. But before that, consider a low-dimensional case with no sparsity on parameters. It is a general fact proven in the paper that $\zeta^T \sim \sqrt{\log d / n}$. By the assumption \ref{assm:1}, this implies $s_{W_0} = o(\sqrt{n / \log d})$ which means that $\left[ I^{11}(\boldsymbol{\theta}_0) \right]_{-1}$ should be sparse with sparsity factor of $o(\sqrt{n / \log d})$. Since we assumed the low-dimensional case ($n >> d$), it allows $s_{W_0}$ to be larger than $d$. This means our no-sparsity assumption is valid in low-dimensional case.
+We will check for specific models if these conditions are reasonable in practice. But before that, consider a low-dimensional case with no sparsity on parameters. It is a general fact proven in the paper that $\zeta^T \sim \sqrt{\log d / n}$. By the assumption \@ref(assm:1), this implies $s_{W_0} = o(\sqrt{n / \log d})$ which means that $\left[ I^{11}(\boldsymbol{\theta}_0) \right]_{-1}$ should be sparse with sparsity factor of $o(\sqrt{n / \log d})$. Since we assumed the low-dimensional case ($n >> d$), it allows $s_{W_0}$ to be larger than $d$. This means our no-sparsity assumption is valid in low-dimensional case.
 
 
 # 4. Application \& Numerical Results
-We check if regularity conditions are reasonable for the following three models in practice. To restrict the problem to what we covere in class, low-dimensionality and no sparsity is assumed. %Note that the assumption \ref{assm:1} is, in most cases, safe to be deemed true for these models. 
+We check if regularity conditions are reasonable for the following three models in practice. To restrict the problem to what we covere in class, low-dimensionality and no sparsity is assumed. %Note that the assumption \@ref(assm:1) is, in most cases, safe to be deemed true for these models. 
 Numerical verification of asymptotic normality follows.
 
 ## 4.1. Gaussian mixture model
 Let $Y_1,\cdots,Y_n$ be IID random variables, $Z$ be a Rademacher random variable. The model is
 $$
-\bf Y = Z\boldsymbol{\beta}_0 + \bf V, \quad \bf V \sim N(\bf 0, \sigma^2 \mathbb{I}_d).
+\mathbf Y = Z\boldsymbol{\beta}_0 + \mathbf V, \quad \mathbf V \sim N(\mathbf 0, \sigma^2 \mathbb{I}_d).
 $$
 We assume that $\sigma^2$ is known and $\boldsymbol{\beta}_0 \ne 0$.
 
@@ -384,16 +385,16 @@ It is proved that if
 	\zeta^T &= \left(\|\boldsymbol{\beta}_0\|_\infty^2 + \sigma^2\right) / \sigma^2 \sqrt{ \frac{\log d}{n} }, \\
 	\zeta^L &= \left(\|\boldsymbol{\beta}_0\|_\infty^2 + \sigma^2\right)^{3/2} / \sigma^4 ( \log d + \log n )^{3/2},
 \end{align*}
-where $T = \left\lceil \frac{\log(C'R) - \log(\Delta^{GMM}\sqrt{\log d/n})}{Cr^2/2} \right\rceil$, $\Delta^{GMM} = (1+C'')\sqrt d \left(\|\boldsymbol{\beta}_0\|_\infty + \sigma\right)$, then all the conditions are met. To check the assumption \ref{assm:1}, plugging in $\zeta$'s gives the requirement $d \log d = o(n / \log n)$ for our non-sparse case. This implies for low-dimensional case where $d \log d = o(n / \log n)$, we can assure asymptotic normality of test statistics.
+where $T = \left\lceil \frac{\log(C'R) - \log(\Delta^{GMM}\sqrt{\log d/n})}{Cr^2/2} \right\rceil$, $\Delta^{GMM} = (1+C'')\sqrt d \left(\|\boldsymbol{\beta}_0\|_\infty + \sigma\right)$, then all the conditions are met. To check the assumption \@ref(assm:1), plugging in $\zeta$'s gives the requirement $d \log d = o(n / \log n)$ for our non-sparse case. This implies for low-dimensional case where $d \log d = o(n / \log n)$, we can assure asymptotic normality of test statistics.
 
 
 
 ## 4.2. Mixture of regression models
-For a random variable $Y \in \mathbb{R}$, Rademacher random variable $Z$ and a random vector $\bf X \sim N(\bf 0, \mathbb{I}_d)$, the model is
+For a random variable $Y \in \mathbb{R}$, Rademacher random variable $Z$ and a random vector $\mathbf X \sim N(\mathbf 0, \mathbb{I}_d)$, the model is
 $$
-Y = Z\bf X^T \boldsymbol{\beta}_0 + V, \quad V \sim N(0, \sigma^2).
+Y = Z\mathbf X^T \boldsymbol{\beta}_0 + V, \quad V \sim N(0, \sigma^2).
 $$
-We assume that $\sigma^2$ is known, $\bf X$, $Z$ and $V$ are independent, and that each coordinate of $\bf x_i$'s are missing with probability $p_m$. Also assume that $\boldsymbol{\beta}_0 \ne 0$.
+We assume that $\sigma^2$ is known, $\mathbf X$, $Z$ and $V$ are independent, and that each coordinate of $\mathbf x_i$'s are missing with probability $p_m$. Also assume that $\boldsymbol{\beta}_0 \ne 0$.
 
 It is proved that if we set
 \begin{align*}
@@ -407,14 +408,11 @@ then all the conditions are met. By plugging in $\zeta$'s into the assumption, w
 
 # 5. Discussions
 We believe the result we reviewed is significant in the following manner.
-\begin{itemize}
-	\item It is the first and the only attempt, as far as we know, to derive asymptotic normality of EM estimators. While previous research focused on computational convergence  rate and convergence guarantee of the global maximizer, this result focused further on statistical properties of possibly local maximizers.
-	\item It provides statistical properties of not only maximum likelihood estimators, but also local maximizer of likelihood function. 
-		\begin{itemize}
-			\item It is worth noting again that derivatives of Q-function successfully recovers score function and information matrix of incomplete data. As a result, the asymptotic distribution of EM estimator is surprizingly similar to that of MLE.
-			\item Rather than being consistent, local maximizers tend to be asymptotically biased as much as $\frac 1 n \hat I^{-1}(\hat{\boldsymbol{\theta}}) S(\bf Y; \hat{\boldsymbol{\theta}})$ as shown in (\ref{eq:2}).
-		\end{itemize}
-\end{itemize}
+
+- It is the first and the only attempt, as far as we know, to derive asymptotic normality of EM estimators. While previous research focused on computational convergence  rate and convergence guarantee of the global maximizer, this result focused further on statistical properties of possibly local maximizers.
+- It provides statistical properties of not only maximum likelihood estimators, but also local maximizer of likelihood function. 
+  - It is worth noting again that derivatives of Q-function successfully recovers score function and information matrix of incomplete data. As a result, the asymptotic distribution of EM estimator is surprizingly similar to that of MLE.
+  - Rather than being consistent, local maximizers tend to be asymptotically biased as much as $\frac 1 n \hat I^{-1}(\hat{\boldsymbol{\theta}}) S(\mathbf Y; \hat{\boldsymbol{\theta}})$ as shown in (\@ref(eq:2)).
 
 However, it needs attention in practice that for some models, regularity conditions for asymptotic normality might not be easy to be met. While the order requirement of the sample size $n$ compared to dimension $d$ is reasonable for Gaussian mixture model, for mixture of regression models it became exponentially large. Still, for the computational convergence guarantee that we did not covered here, required order of $n$ could be much lower with respect to $d$, which makes the algorithm applicable to most latent variable models.
 
