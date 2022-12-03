@@ -435,3 +435,6 @@ beta_star <- matrix(rnorm(n = p*d), nrow = p)
 V <- matrix(data = rnorm(n*d, mean = 0, sd = sqrt(sigma_sq)), nrow = n)
 Y <- Z %*% beta_star + V
 ```
+
+
+# References
