@@ -1,0 +1,103 @@
+---
+title: "ST793 project simulation"
+author: "Sohyeon"
+date: "2022-12-03"
+output: html_document
+---
+```{r warning = FALSE, message = FALSE, include = FALSE}
+library(tidyverse)
+```
+
+# Simulation
+
+```{r include = FALSE}
+set.seed(1)
+n <- 100; d <- 10; sigma_sq <- 1;
+Z_col <- matrix(sample(c(1, -1), size = n, replace = TRUE, prob = c(0.5,0.5)), nrow = n)
+beta_star <- matrix(rnorm(n = d, sd = 1))
+V <- matrix(rnorm(n = n*d, mean = 0, sd = sqrt(sigma_sq)), nrow = n)
+Z <- Z_col
+for(j in 2:d) {
+  Z <- cbind(Z, Z_col)
+}
+beta_mat <- t(beta_star)
+for(i in 2:n) {
+  beta_mat <- rbind(beta_mat, t(beta_star))
+}
+Y <- Z * beta_mat + V
+```
+
+
+
+```{r}
+supp_func <- function(beta, s) {
+  largest <- sort(abs(beta)) %>% tail(s)
+  idx <- which(abs(beta) %in% largest)
+  return(idx)
+}
+```
+
+```{r}
+trunc_func <- function(beta, S) {
+  zero_idx <- setdiff(1:length(beta), S)
+  beta[zero_idx] <- 0
+  return(beta)
+}
+```
+
+```{r}
+omega_func <- function(beta, y, sigma_sq) {
+  value <- 1/(1 + exp(-(beta %*% y)/sigma_sq))
+  return(value)
+}
+```
+
+
+```{r}
+high_EM_GMM <- function(s, T, beta_init, Y) {
+  d <- ncol(Y); n <- nrow(Y)
+  S_init <- supp_func(beta_init, s); beta_0 <- trunc_func(beta_init, S_init);
+  
+  for(t in 1:T) {
+    # M-step
+    Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
+    omega_val <- lapply(Y_row_list, FUN = omega_func, beta = beta_0, sigma_sq = sigma_sq)
+    
+    omega_y <- mapply(function(x, y) x * y, x = omega_val, y = Y_row_list)
+    first_term <- 2 * apply(omega_y, MARGIN = 1, FUN = mean)
+    beta_temp <- first_term - apply(Y, 2, mean)
+    
+    # T-step
+    S_temp <- supp_func(beta_temp, s)
+    beta_new <- trunc_func(beta = beta_temp, S = S_temp)
+    
+    # Update value
+    beta_0 <- beta_new
+  }
+  return(beta_new)
+}
+```
+
+
+```{r warning = FALSE}
+beta_init <- rnorm(d, sd = 0.1)
+est <- high_EM_GMM(s = d, T = 50, beta_init = beta_init, Y = Y)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
