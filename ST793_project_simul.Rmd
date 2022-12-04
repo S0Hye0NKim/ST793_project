@@ -91,7 +91,36 @@ est
 ```
 
 
+```{r}
+v_by <- function(beta, Y, sigma_sq){
+  Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
+  f_denom1 <- function(beta, y, sigma_sq) {
+    return(1 + exp(-2 * (beta %*% y)/sigma_sq))
+  }
+  
+  f_denom2 <- function(beta, y, sigma_sq) {
+    return(1 + exp(2 * (beta %*% y)/sigma_sq))
+  }
+  denom1 = lapply(Y_row_list, FUN = f_denom1, beta = beta, sigma_sq = sigma_sq)
+  denom2 = lapply(Y_row_list, FUN = f_denom2, beta = beta, sigma_sq = sigma_sq)
+  denom = mapply(function(x, y) x * y, x = denom1, y = denom2)
+  num = 4 / sigma_sq
+  return(num / denom)
+}
 
+V_n_hat <- function(beta, Y, sigma_sq){
+  d <- ncol(Y)
+  
+  v = v_by(beta, Y, sigma_sq)
+  
+  Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
+  yyt_list <- mapply(x = Y_row_list, FUN = function(x) x %*% t(x), SIMPLIFY = F)
+  
+  vyyt_list <- mapply(FUN = function(x, y) x * y, x = v, y = yyt_list, SIMPLIFY = F)
+  
+  return( diag(1, d) - Reduce("+", vyyt_list) / length(vyyt_list)  )
+}
+```
 
 
 
