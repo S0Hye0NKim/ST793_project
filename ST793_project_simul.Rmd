@@ -55,7 +55,7 @@ S_n_hat <- function(beta, Y, sigma_sq) {
   d <- ncol(Y)
   Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
   omega_val <- lapply(Y_row_list, FUN = omega_func, beta = beta, sigma_sq = sigma_sq)
-  omega_val2 <- lapply(omega_val, FUN = function(x) 2*x - 1)
+  omega_val2 <- lapply(omega_val, FUN = function(x) (2*x - 1) %>% as.numeric)
   omega_y_2 <- mapply(function(x, y) x * y, x = omega_val2, y = Y_row_list)
   first_deriv_Q <- apply(omega_y_2, MARGIN = 1, FUN = mean) - beta
   
@@ -88,7 +88,9 @@ V_n_hat <- function(beta, Y, sigma_sq){
   
   vyyt_list <- mapply(FUN = function(x, y) x * y, x = v, y = yyt_list, SIMPLIFY = F)
   
-  return( diag(1, d) - Reduce("+", vyyt_list) / length(vyyt_list)  )
+  avg_vyyt <- Reduce("+", vyyt_list)/length(vyyt_list)
+  
+  return( diag(1, d) - avg_vyyt  )
 }
 
 ```
@@ -100,9 +102,9 @@ set.seed(2)
 T_S_seq <- c()
 T_W_seq <- c()
 for(simul in 1:100) {
-n <- 50; d <- 10; sigma_sq <- 1;
+n <- 100; d <- 10; sigma_sq <- 1;
 Z_col <- matrix(sample(c(2, -1), size = n, replace = TRUE, prob = c(0.3,0.7)), nrow = n)
-beta_star <- matrix(rnorm(n = d, mean = 0, sd = 1))
+beta_star <- matrix(rnorm(n = d, mean = 0, sd = 0.1))
 V <- matrix(rnorm(n = n*d, mean = 0, sd = sqrt(sigma_sq)), nrow = n)
 Z <- Z_col
 for(j in 2:d) {
@@ -133,40 +135,17 @@ T_W_seq <- c(T_W_seq, T_W)
 }
 ```
 
-
 ```{r}
-v_by <- function(beta, Y, sigma_sq){
-  Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
-  f_denom1 <- function(beta, y, sigma_sq) {
-    return(1 + exp(-2 * (beta %*% y)/sigma_sq))
-  }
-  
-  f_denom2 <- function(beta, y, sigma_sq) {
-    return(1 + exp(2 * (beta %*% y)/sigma_sq))
-  }
-  denom1 = lapply(Y_row_list, FUN = f_denom1, beta = beta, sigma_sq = sigma_sq)
-  denom2 = lapply(Y_row_list, FUN = f_denom2, beta = beta, sigma_sq = sigma_sq)
-  denom = mapply(function(x, y) x * y, x = denom1, y = denom2)
-  num = 4 / sigma_sq
-  return(num / denom)
-}
-
-V_n_hat <- function(beta, Y, sigma_sq){
-  d <- ncol(Y)
-  
-  v = v_by(beta, Y, sigma_sq)
-  
-  Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
-  yyt_list <- mapply(x = Y_row_list, FUN = function(x) x %*% t(x), SIMPLIFY = F)
-  
-  vyyt_list <- mapply(FUN = function(x, y) x * y, x = v, y = yyt_list, SIMPLIFY = F)
-  
-  return( diag(1, d) - Reduce("+", vyyt_list) / length(vyyt_list)  )
-}
+hist(T_S_seq, breaks = 50, freq = FALSE)
+curve(dchisq(x, df = 10), from = 0, to = 200, n = 5000, col= 'orange', lwd=2, add = T)
 ```
 
 
 
+```{r}
+hist(T_W_seq, breaks = 50, freq = FALSE)
+curve(dchisq(x, df = 10), from = 0, to = 200, n = 5000, col= 'orange', lwd=2, add = T)
+```
 
 
 
