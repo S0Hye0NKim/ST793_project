@@ -6,27 +6,10 @@ output: html_document
 ---
 ```{r warning = FALSE, message = FALSE, include = FALSE}
 library(tidyverse)
+library(expm)
 ```
 
 # Simulation
-
-```{r include = FALSE}
-set.seed(1)
-n <- 100; d <- 10; sigma_sq <- 1;
-Z_col <- matrix(sample(c(2, -1), size = n, replace = TRUE, prob = c(0.3,0.7)), nrow = n)
-beta_star <- matrix(rnorm(n = d, mean = 0, sd = 1))
-V <- matrix(rnorm(n = n*d, mean = 0, sd = sqrt(sigma_sq)), nrow = n)
-Z <- Z_col
-for(j in 2:d) {
-  Z <- cbind(Z, Z_col)
-}
-beta_mat <- t(beta_star)
-for(i in 2:n) {
-  beta_mat <- rbind(beta_mat, t(beta_star))
-}
-Y <- Z * beta_mat + V
-```
-
 
 
 ```{r}
@@ -35,25 +18,16 @@ supp_func <- function(beta, s) {
   idx <- which(abs(beta) %in% largest)
   return(idx)
 }
-```
-
-```{r}
 trunc_func <- function(beta, S) {
   zero_idx <- setdiff(1:length(beta), S)
   beta[zero_idx] <- 0
   return(beta)
 }
-```
-
-```{r}
 omega_func <- function(beta, y, sigma_sq) {
   value <- 1/(1 + exp(-(beta %*% y)/sigma_sq))
   return(value)
 }
-```
 
-
-```{r}
 high_EM_GMM <- function(s, T, beta_init, Y) {
   d <- ncol(Y); n <- nrow(Y)
   S_init <- supp_func(beta_init, s); beta_0 <- trunc_func(beta_init, S_init);
@@ -76,18 +50,87 @@ high_EM_GMM <- function(s, T, beta_init, Y) {
   }
   return(beta_new)
 }
+
+S_n_hat <- function(beta, Y, sigma_sq) {
+  d <- ncol(Y)
+  Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
+  omega_val <- lapply(Y_row_list, FUN = omega_func, beta = beta, sigma_sq = sigma_sq)
+  omega_val2 <- lapply(omega_val, FUN = function(x) 2*x - 1)
+  omega_y_2 <- mapply(function(x, y) x * y, x = omega_val2, y = Y_row_list)
+  first_deriv_Q <- apply(omega_y_2, MARGIN = 1, FUN = mean) - beta
+  
+  return(first_deriv_Q)
+}
+
+v_by <- function(beta, Y, sigma_sq){
+  Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
+  f_denom1 <- function(beta, y, sigma_sq) {
+    return(1 + exp(-2 * (beta %*% y)/sigma_sq))
+  }
+  
+  f_denom2 <- function(beta, y, sigma_sq) {
+    return(1 + exp(2 * (beta %*% y)/sigma_sq))
+  }
+  denom1 = lapply(Y_row_list, FUN = f_denom1, beta = beta, sigma_sq = sigma_sq)
+  denom2 = lapply(Y_row_list, FUN = f_denom2, beta = beta, sigma_sq = sigma_sq)
+  denom = mapply(function(x, y) x * y, x = denom1, y = denom2)
+  num = 4 / sigma_sq
+  return(num / denom)
+}
+
+V_n_hat <- function(beta, Y, sigma_sq){
+  d <- ncol(Y)
+  
+  v = v_by(beta, Y, sigma_sq)
+  
+  Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
+  yyt_list <- mapply(x = Y_row_list, FUN = function(x) x %*% t(x), SIMPLIFY = F)
+  
+  vyyt_list <- mapply(FUN = function(x, y) x * y, x = v, y = yyt_list, SIMPLIFY = F)
+  
+  return( diag(1, d) - Reduce("+", vyyt_list) / length(vyyt_list)  )
+}
+
 ```
 
 
 ```{r warning = FALSE}
+set.seed(2)
+
+T_S_seq <- c()
+T_W_seq <- c()
+for(simul in 1:100) {
+n <- 50; d <- 10; sigma_sq <- 1;
+Z_col <- matrix(sample(c(2, -1), size = n, replace = TRUE, prob = c(0.3,0.7)), nrow = n)
+beta_star <- matrix(rnorm(n = d, mean = 0, sd = 1))
+V <- matrix(rnorm(n = n*d, mean = 0, sd = sqrt(sigma_sq)), nrow = n)
+Z <- Z_col
+for(j in 2:d) {
+  Z <- cbind(Z, Z_col)
+}
+beta_mat <- t(beta_star)
+for(i in 2:n) {
+  beta_mat <- rbind(beta_mat, t(beta_star))
+}
+Y <- Z * beta_mat + V
+
 beta_init <- runif(d, min = 1, max = 3)
 est <- high_EM_GMM(s = d, T = 50, beta_init = beta_init, Y = Y)
-```
+beta_star <- t(abs(beta_star))
+est <- abs(est)
 
+V_n <- V_n_hat(beta = beta_star, Y, sigma_sq)
+S_n <- S_n_hat(beta = beta_star, Y, sigma_sq)
+V_n_est <- V_n_hat(beta = est, Y, sigma_sq)
+S_n_est <- S_n_hat(beta = est, Y, sigma_sq)
+  
+T_S <- n*S_n%*% solve(V_n) %*% t(S_n)
+h_beta <- est - solve(-V_n_est) %*% S_n_est
+T_W <- n*(t(h_beta) - beta_star) %*% V_n_est %*% t(t(h_beta) - beta_star)
 
-```{r}
-beta_star
-est
+T_S_seq <- c(T_S_seq, T_S)
+T_W_seq <- c(T_W_seq, T_W)
+}
 ```
 
 
@@ -121,7 +164,6 @@ V_n_hat <- function(beta, Y, sigma_sq){
   return( diag(1, d) - Reduce("+", vyyt_list) / length(vyyt_list)  )
 }
 ```
-
 
 
 

@@ -163,7 +163,7 @@ T_W =  \sqrt n h(\hat{\boldsymbol{\theta}}, \lambda) \left\{ \begin{bmatrix}
 $$
 where
 \begin{gather*}
-	h(\hat{\boldsymbol{\theta}}, \lambda) = \hat{\boldsymbol{\theta}}_1 - \left\{ \left[ \hat V_n(\hat{\boldsymbol{\theta}}) \right]_{11} - W(\hat{\boldsymbol{\theta}}, \lambda)^T \left[\hat V_n(\hat{\boldsymbol{\theta}})\right]_{21} \right\}^{-1} S_n(\hat{\boldsymbol{\theta}}, \lambda).
+	h(\hat{\boldsymbol{\theta}}, \lambda) = \hat{\boldsymbol{\theta}}_1 - \left\{ \left[ -\hat V_n(\hat{\boldsymbol{\theta}}) \right]_{11} + W(\hat{\boldsymbol{\theta}}, \lambda)^T \left[\hat V_n(\hat{\boldsymbol{\theta}})\right]_{21} \right\}^{-1} S_n(\hat{\boldsymbol{\theta}}, \lambda).
 \end{gather*}
 
 Equivalently, we can write that $$\sqrt n h(\hat{\boldsymbol{\theta}}, \lambda) \sim AN \left(0, \begin{bmatrix}
@@ -189,14 +189,14 @@ T_W = \sqrt n \left( h(\hat{\boldsymbol{\theta}}, \lambda) - \boldsymbol{\theta}
 	\hat V_n(\hat{\boldsymbol{\theta}})
 	\right\}^{1/2},
 $$
-where $h(\hat{\boldsymbol{\theta}}) = \hat{\boldsymbol{\theta}} - \left\{ \hat V_n(\hat{\boldsymbol{\theta}}) \right\}^{-1} \nabla_1 Q_n(\hat{\boldsymbol{\theta}}, \hat{\boldsymbol{\theta}})$
+where $h(\hat{\boldsymbol{\theta}}) = \hat{\boldsymbol{\theta}} - \left\{ -\hat V_n(\hat{\boldsymbol{\theta}}) \right\}^{-1} \nabla_1 Q_n(\hat{\boldsymbol{\theta}}, \hat{\boldsymbol{\theta}})$
 
 By using lemma \@ref(lemma:3.1), we can further simplify $T_S$ and $T_W$ as the following familiar forms:
 \begin{align}
 	T_S &= \frac 1 {\sqrt n} S(\mathbf Y; \boldsymbol{\theta}_0)\left\{
 	\hat I({\boldsymbol{\theta}}_0) 
 	\right\}^{-1/2}, (\#eq:1)\\
-	T_W &= \sqrt n \left( \hat{\boldsymbol{\theta}} - \boldsymbol{\theta}_0 - \frac 1 n \hat I^{-1}(\hat{\boldsymbol{\theta}}) S(\mathbf Y; \hat{\boldsymbol{\theta}}) \right)
+	T_W &= \sqrt n \left( \hat{\boldsymbol{\theta}} - \boldsymbol{\theta}_0 + \frac 1 n \hat I^{-1}(\hat{\boldsymbol{\theta}}) S(\mathbf Y; \hat{\boldsymbol{\theta}}) \right)
 	\left\{
 	\hat I(\hat{\boldsymbol{\theta}}) 
 	\right\}^{1/2} (\#eq:2)\\
