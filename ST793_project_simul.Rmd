@@ -13,8 +13,8 @@ library(tidyverse)
 ```{r include = FALSE}
 set.seed(1)
 n <- 100; d <- 10; sigma_sq <- 1;
-Z_col <- matrix(sample(c(1, -1), size = n, replace = TRUE, prob = c(0.5,0.5)), nrow = n)
-beta_star <- matrix(rnorm(n = d, sd = 1))
+Z_col <- matrix(sample(c(2, -1), size = n, replace = TRUE, prob = c(0.3,0.7)), nrow = n)
+beta_star <- matrix(rnorm(n = d, mean = 0, sd = 1))
 V <- matrix(rnorm(n = n*d, mean = 0, sd = sqrt(sigma_sq)), nrow = n)
 Z <- Z_col
 for(j in 2:d) {
@@ -80,11 +80,15 @@ high_EM_GMM <- function(s, T, beta_init, Y) {
 
 
 ```{r warning = FALSE}
-beta_init <- rnorm(d, sd = 0.1)
+beta_init <- runif(d, min = 1, max = 3)
 est <- high_EM_GMM(s = d, T = 50, beta_init = beta_init, Y = Y)
 ```
 
 
+```{r}
+beta_star
+est
+```
 
 
 
