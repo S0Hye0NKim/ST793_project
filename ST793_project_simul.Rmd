@@ -6,33 +6,62 @@ output: html_document
 ---
 ```{r warning = FALSE, message = FALSE, include = FALSE}
 library(tidyverse)
-library(expm)
 ```
 
 # Simulation
 
+For simplicity, we focused on the full parameter case with $d=10$. Furthermore, to view asymptotic multivariate normality, we redefined score and wald-type statistics as the square of the corresponding ones introduced in previous section. That is,
+$$
+T_S = n S_n(\boldsymbol{\theta}_0, \lambda)^T\left\{
+	\hat V_n(\boldsymbol{\theta}_0)
+	\right\}^{-1} S_n(\boldsymbol{\theta}_0, \lambda),
+$$
+$$
+T_W = n \left( h(\hat{\boldsymbol{\theta}}, \lambda) - \boldsymbol{\theta}_0 \right)^T \left\{
+	\hat V_n(\hat{\boldsymbol{\theta}})
+	\right\} \left( h(\hat{\boldsymbol{\theta}}, \lambda) - \boldsymbol{\theta}_0 \right),
+$$
+where $S_n(\boldsymbol{\theta}_0,\lambda) = \nabla_1 Q_n(\boldsymbol{\theta}_0, \boldsymbol{\theta}_0)$, $\hat V_n(\boldsymbol{\theta}_0) = -\nabla^2_{1,1} Q_n(\boldsymbol{\theta}_0, \boldsymbol{\theta}_0) -\nabla^2_{1,2} Q_n(\boldsymbol{\theta}_0, \boldsymbol{\theta}_0)$, and $h(\hat{\boldsymbol{\theta}}) = \hat{\boldsymbol{\theta}} + \left\{ \hat V_n(\hat{\boldsymbol{\theta}}) \right\}^{-1} \nabla_1 Q_n(\hat{\boldsymbol{\theta}}, \hat{\boldsymbol{\theta}})$.
+
+We first set the case with a Gaussian mixture model with true parameter $\boldsymbol\beta_0 = (2,2,\cdots,2)^T$. We assume that the variance of random error $V$ is known to be 1. In this case, it can be derived that
+$$
+Q_n(\boldsymbol\beta', \boldsymbol\beta) = -\frac 1 {2n} \sum_{i=1}^n \omega_{\boldsymbol\beta}(\mathbf y_i) \| \mathbf y_i - \boldsymbol \beta' \|_2^2 + \left[ 1 - \omega_{\boldsymbol\beta}(\mathbf y_i)\right] \|\mathbf y_i - \boldsymbol\beta'\|_2^2.
+$$
+Differentiate it by $\boldsymbol\beta'$ and set it to zero gives the maximizer as
+$$
+\arg\max_{\boldsymbol\beta'} Q_n(\boldsymbol\beta', \boldsymbol\beta) = \frac 1 {2n} \sum_{i=1}^n \omega_{\boldsymbol\beta}(\mathbf y_i)\mathbf y_i - \frac 1 n \sum_{i=1}^n \mathbf y_i
+$$
+Further computation gives
+$$
+\hat V_n(\boldsymbol\beta) = \mathbb I_d - \frac 1 n \sum_{i=1}^n \nu_{\boldsymbol\beta}(\mathbf y_i) \mathbf y_i \mathbf y_i^T,
+$$
+$$
+\nu_{\boldsymbol\beta}(\mathbf y_i) = \frac 4 { \sigma^2 \left\{ 1 + \exp(-2\boldsymbol\beta^T\mathbf y_i / \sigma^2) \right\} \left\{ 1 + \exp(2\boldsymbol\beta^T\mathbf y_i / \sigma^2) \right\} }.
+$$
+The EM algorithm for the GMM and functions to compute score and Wald-type test statistic is defined as follows.
 
 ```{r}
-supp_func <- function(beta, s) {
-  largest <- sort(abs(beta)) %>% tail(s)
-  idx <- which(abs(beta) %in% largest)
-  return(idx)
-}
-trunc_func <- function(beta, S) {
-  zero_idx <- setdiff(1:length(beta), S)
-  beta[zero_idx] <- 0
-  return(beta)
-}
+# supp_func <- function(beta, s) {
+#   largest <- sort(abs(beta)) %>% tail(s)
+#   idx <- which(abs(beta) %in% largest)
+#   return(idx)
+# }
+# trunc_func <- function(beta, S) {
+#   zero_idx <- setdiff(1:length(beta), S)
+#   beta[zero_idx] <- 0
+#   return(beta)
+# }
 omega_func <- function(beta, y, sigma_sq) {
-  value <- 1/(1 + exp(-(beta %*% y)/sigma_sq))
+  value <- 1 / (1 + exp(-(beta %*% y)/sigma_sq))
   return(value)
 }
 
-high_EM_GMM <- function(s, T, beta_init, Y) {
+high_EM_GMM <- function(s, n_iter, beta_init, Y) {
   d <- ncol(Y); n <- nrow(Y)
-  S_init <- supp_func(beta_init, s); beta_0 <- trunc_func(beta_init, S_init);
+  beta_0 <- beta_init
+  #S_init <- supp_func(beta_init, s); beta_0 <- trunc_func(beta_init, S_init);
   
-  for(t in 1:T) {
+  for(t in 1:n_iter) {
     # M-step
     Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
     omega_val <- lapply(Y_row_list, FUN = omega_func, beta = beta_0, sigma_sq = sigma_sq)
@@ -41,9 +70,10 @@ high_EM_GMM <- function(s, T, beta_init, Y) {
     first_term <- 2 * apply(omega_y, MARGIN = 1, FUN = mean)
     beta_temp <- first_term - apply(Y, 2, mean)
     
-    # T-step
-    S_temp <- supp_func(beta_temp, s)
-    beta_new <- trunc_func(beta = beta_temp, S = S_temp)
+    # # T-step
+    # S_temp <- supp_func(beta_temp, s)
+    # beta_new <- trunc_func(beta = beta_temp, S = S_temp)
+    beta_new = beta_temp  # we assume non-sparse case.
     
     # Update value
     beta_0 <- beta_new
@@ -64,10 +94,11 @@ S_n_hat <- function(beta, Y, sigma_sq) {
 
 v_by <- function(beta, Y, sigma_sq){
   Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
+  
   f_denom1 <- function(beta, y, sigma_sq) {
     return(1 + exp(-2 * (beta %*% y)/sigma_sq))
   }
-  
+
   f_denom2 <- function(beta, y, sigma_sq) {
     return(1 + exp(2 * (beta %*% y)/sigma_sq))
   }
@@ -75,7 +106,15 @@ v_by <- function(beta, Y, sigma_sq){
   denom2 = lapply(Y_row_list, FUN = f_denom2, beta = beta, sigma_sq = sigma_sq)
   denom = mapply(function(x, y) x * y, x = denom1, y = denom2)
   num = 4 / sigma_sq
+  
+  # f_denom <- function(beta, y, sigma_sq) {
+  #   return( (1 + exp(-(beta %*% y)/sigma_sq))^(-2) * exp(-(beta %*% y)/sigma_sq) * y/sigma_sq * (-1/sigma_sq) )
+  # }
+  # 
+  # wby = lapply(Y_row_list, FUN = f_denom, beta = beta, sigma_sq = sigma_sq)
+  
   return(num / denom)
+  # return(wby)
 }
 
 V_n_hat <- function(beta, Y, sigma_sq){
@@ -84,17 +123,22 @@ V_n_hat <- function(beta, Y, sigma_sq){
   v = v_by(beta, Y, sigma_sq)
   
   Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
+  
+  # wbyyt_list <- mapply(x = Y_row_list, w = v, FUN = function(x, w) (2*w) %*% t(x), SIMPLIFY = F)
+  # wbyyt_avg <- Reduce("+", wbyyt_list) / length(wbyyt_list)
   yyt_list <- mapply(x = Y_row_list, FUN = function(x) x %*% t(x), SIMPLIFY = F)
-  
+
   vyyt_list <- mapply(FUN = function(x, y) x * y, x = v, y = yyt_list, SIMPLIFY = F)
+
+  avg_vyyt <- Reduce("+", vyyt_list) / length(vyyt_list)
   
-  avg_vyyt <- Reduce("+", vyyt_list)/length(vyyt_list)
-  
+  # return( diag(1, d) - wbyyt_avg  )
   return( diag(1, d) - avg_vyyt  )
 }
 
 ```
 
+Finally, we run the simulation.
 
 ```{r warning = FALSE}
 set.seed(2)
@@ -102,48 +146,50 @@ set.seed(2)
 T_S_seq <- c()
 T_W_seq <- c()
 for(simul in 1:100) {
-n <- 100; d <- 10; sigma_sq <- 1;
-Z_col <- matrix(sample(c(2, -1), size = n, replace = TRUE, prob = c(0.3,0.7)), nrow = n)
-beta_star <- matrix(rnorm(n = d, mean = 0, sd = 0.1))
-V <- matrix(rnorm(n = n*d, mean = 0, sd = sqrt(sigma_sq)), nrow = n)
-Z <- Z_col
-for(j in 2:d) {
-  Z <- cbind(Z, Z_col)
-}
-beta_mat <- t(beta_star)
-for(i in 2:n) {
-  beta_mat <- rbind(beta_mat, t(beta_star))
-}
-Y <- Z * beta_mat + V
-
-beta_init <- runif(d, min = 1, max = 3)
-est <- high_EM_GMM(s = d, T = 50, beta_init = beta_init, Y = Y)
-beta_star <- t(abs(beta_star))
-est <- abs(est)
-
-V_n <- V_n_hat(beta = beta_star, Y, sigma_sq)
-S_n <- S_n_hat(beta = beta_star, Y, sigma_sq)
-V_n_est <- V_n_hat(beta = est, Y, sigma_sq)
-S_n_est <- S_n_hat(beta = est, Y, sigma_sq)
+  n <- 100; d <- 10; sigma_sq <- 1;
+  Z_col <- matrix(sample(c(1, -1), size = n, replace = TRUE, prob = c(0.5, 0.5)), nrow = n)
+  beta_star <- matrix(rep(2, d))#rnorm(n = d, mean = 1, sd = 0.1))
+  V <- matrix(rnorm(n = n*d, mean = 0, sd = sqrt(sigma_sq)), nrow = n)
+  Z <- Z_col
+  for(j in 2:d) {
+    Z <- cbind(Z, Z_col)
+  }
+  beta_mat <- t(abs(beta_star))
+  for(i in 2:n) {
+    beta_mat <- rbind(beta_mat, t(beta_star))
+  }
+  Y <- Z * beta_mat + V
   
-T_S <- n*S_n%*% solve(V_n) %*% t(S_n)
-h_beta <- est - solve(-V_n_est) %*% S_n_est
-T_W <- n*(t(h_beta) - beta_star) %*% V_n_est %*% t(t(h_beta) - beta_star)
-
-T_S_seq <- c(T_S_seq, T_S)
-T_W_seq <- c(T_W_seq, T_W)
+  beta_init <- runif(d, min = 1, max = 3)
+  est <- high_EM_GMM(s = d, n_iter = 50, beta_init = beta_init, Y = Y)
+  beta_star <- t(beta_star)
+  est <- abs(est)
+  
+  V_n <- V_n_hat(beta = beta_star, Y, sigma_sq)
+  S_n <- S_n_hat(beta = beta_star, Y, sigma_sq)
+  V_n_est <- V_n_hat(beta = est, Y, sigma_sq)
+  S_n_est <- S_n_hat(beta = est, Y, sigma_sq)
+    
+  T_S <- n * S_n %*% solve(V_n) %*% t(S_n)
+  h_beta <- est + solve(V_n_est) %*% matrix(S_n_est)
+  T_W <- n * (t(h_beta) - beta_star) %*% V_n_est %*% (h_beta - t(beta_star))
+  
+  T_S_seq <- c(T_S_seq, T_S)
+  T_W_seq <- c(T_W_seq, T_W)
 }
 ```
 
+
+Both score and Wald-type statistics are expected to follow Chi-squared distribution with degrees of freedom equal to 10. The following histograms empirically shows that our expectation is valid.
+
 ```{r}
-hist(T_S_seq, breaks = 50, freq = FALSE)
+hist(T_S_seq, breaks = 50, freq = FALSE, xlab = "Score-type test statistic")
 curve(dchisq(x, df = 10), from = 0, to = 200, n = 5000, col= 'orange', lwd=2, add = T)
 ```
 
 
-
 ```{r}
-hist(T_W_seq, breaks = 50, freq = FALSE)
+hist(T_W_seq, breaks = 50, freq = FALSE, xlab = "Wald-type test statistic")
 curve(dchisq(x, df = 10), from = 0, to = 200, n = 5000, col= 'orange', lwd=2, add = T)
 ```
 

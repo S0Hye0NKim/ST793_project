@@ -6,7 +6,7 @@ output:
 bibliography: biblio.bib
 ---
 
-# 1. Introduction
+# Introduction
 
 In the second chapter of the textboot [@esi], as a method of solving likelihood equation, expectation-maximization was introduced. The rationale of the EM algorithm is to introduce a latent variable $\mathbf Z$ to maximize a complex likelihood $L(\theta; \mathbf Y)$. By doing so, the complete data likelihood $L_\text{C}(\theta; \mathbf Y, \mathbf Z)$ becomes more accessible form, sometimes even leads to analytic forms of estimators.
 
@@ -14,13 +14,13 @@ However, unlike other methods that are introduced in the same chapter, estimator
 
 Surprisingly, there were few to no articles that covered asymptotic normality of EM estimators. Here, we would like to review an article [@main] that covered the topic directly, for a modified version of the EM algorithm. [@main] consists of three parts; the first part is about a modified version of EM algorithm that can be appplied to high-dimensional and sparse settings; the second part focuses on computational property; the third part focuses on defining test statistics based on EM estimates and deriving their asymptotic distribution under the null hypothesis.
 
-In this post, we focused primarily on the third part of [@main], i.e. the asymptotic distribution of EM estimators. Luckily, the modified EM used in the paper is a generalization of ordinary EM. This allows us to apply the result to derive asymptotic distribution of ordinary EM estimators. Upon reviewing the content from [@main], we translated the notations into familiar form as in [@esi]. In addition, we set the settings into three different cases that we covered in the class so that the results becomes more clear. Furthermore, application to and numerical results from specific latent variable models are proposed.
+In this post, we focused primarily on the third part of [@main], i.e. the asymptotic distribution of EM estimators. Luckily, the modified EM used in the paper is a generalization of ordinary EM. This allows us to apply the result to derive asymptotic distribution of ordinary EM estimators. Upon reviewing the content from [@main], we translated the notations into familiar form as in [@esi]. In addition, we set the settings that we covered in the class so that the results becomes clearer. Furthermore, application to and numerical results from specific latent variable model is proposed.
 
-The rest of the post is organized as follows. In section 2, we review the basics of EM algorithm. We introduce the modified version as well and show that if no sparsity is assumed on parameter, it is equivalent to ordinary EM algorithm that we covered in the class. In section 3, we introduce score-type and Wald-type test statistic. We provide brief sketch of the proofs of asymptotic normality of them as well. We translated the result into familiar notation. In the last section 4, we apply the result to latent models and comment on the reasonability of conditions for asymptotic normality of test statistics. Numerical result supporting main theorems are provided in conjunction.
+The rest of the post is organized as follows. In section 2, we review the basics of EM algorithm. We introduce the modified version as well and show that if no sparsity is assumed on parameter, it is equivalent to ordinary EM algorithm that we covered in the class. In section 3, we introduce score-type and Wald-type test statistic. We provide brief sketch of the proofs of asymptotic normality of them as well. We translated the result into familiar notation that was used in the class. In the last section 4, we apply the result to latent variable model and comment on the reasonability of conditions for asymptotic normality of test statistics. Numerical result supporting main theorems are provided in conjunction.
 
-# 2. The Expectation-Maximization Algorithm
+# The Expectation-Maximization Algorithm
 
-## 2.1. Ordinary EM
+## Ordinary EM
 Suppose that $\mathbf Y = (Y_1,\cdots,Y_n)$ is an IID sample of size $n$ from a density $f(y; \boldsymbol{\theta})$, $\boldsymbol{\theta} \in \mathbb R^d$. The log-likelihood becomes
 $$\ell(\boldsymbol{\theta}) = \sum_{i=1}^n \log f(y_i;\boldsymbol{\theta}).$$
 We assume that there exist latent variable $\mathbf Z=(Z_1, \cdots, Z_n)$ and the complete data $\{(X_1, Z_1), \cdots, (X_n, Z_n)\}$ is in fact randomly generated from a joint density $h(y, z; \boldsymbol{\theta})$. In this setting, the complete data log-likelihood is given as
@@ -52,7 +52,7 @@ The ordinary EM algorithm is defined as Algorithm 1. It is proved in [@esi] that
 ******
 
 
-## 2.2. High-dimensional sparse EM
+## High-dimensional sparse EM
 
 [@main] propose a generalized EM algorithm that can take sparse parameters into account for high-dimensional models. First, we define two functions to enforce sparsity of parameter.
 
@@ -89,7 +89,7 @@ The modified EM is provided as in Algorithm 2. Notice that if $\hat s = d$, then
 ******
 
 
-# 3. Test statistic based on EM estimators
+# Test statistic based on EM estimators
 
 The paper proposed a score-type statistic and a Wald-type statistic based on the estimator achieved from EM algorithm. For simplicity, denote $T_S$, $T_W$ by score-type and Wald-type statistic, respectively. In addition, define $\nabla_1 Q_n(\boldsymbol{\theta}, \boldsymbol{\theta}')$ as the gradient with respect to the first argument, and similarly $\nabla_2 Q_n(\boldsymbol{\theta}, \boldsymbol{\theta}')$ as the gradient with respect to the second argument. Define $\nabla_{1,2}^2 Q_n(\boldsymbol{\theta}, \boldsymbol{\theta}')$ as the second derivatives with respect to the first and then the second argument. 
 
@@ -111,7 +111,7 @@ For simplicity, we let block components of any matrix $A$ by
  \end{gather*}
  
 
-## 3.1. Score-type test statistic
+## Score-type test statistic
 
  Suppose we are testing the null $H_0: \boldsymbol{\theta}_1 = 0$ from $\boldsymbol{\theta} = (\boldsymbol{\theta}_1, \boldsymbol{\theta}_2)^T \in \mathbb{R}^d$, $\boldsymbol{\theta}_1 \in \mathbb{R}^r$.
  
@@ -150,7 +150,7 @@ Equivalently, we can write that $$\sqrt n S_n(\tilde{\boldsymbol{\theta}}, \lamb
 	\end{bmatrix}^T \right).$$ Under regularity conditions, it is shown that $T_S \overset d \to N(0,1)$ as $n \to \infty$.
 
 
-## 3.2. Wald-type test statistic
+## Wald-type test statistic
 The Wald-type test statistic is defined as
 $$
 T_W =  \sqrt n h(\hat{\boldsymbol{\theta}}, \lambda) \left\{ \begin{bmatrix}
@@ -175,7 +175,7 @@ Equivalently, we can write that $$\sqrt n h(\hat{\boldsymbol{\theta}}, \lambda) 
 	\end{bmatrix}^T \right).$$ Under regularity conditions, $T_W$ also converges in distribution to $N(0,1)$ as $n$ grows to infinity.
 
 
-## 3.3. Simplest case: testing the full parameter
+## Simplest case: testing the full parameter
 For a simplest example, consider testing the null hypothesis $H_0: \boldsymbol{\theta} = \boldsymbol{\theta}_0$. In this case,
 $$
 T_S = \sqrt n S_n(\boldsymbol{\theta}_0, \lambda)\left\{
@@ -207,7 +207,7 @@ By using lemma \@ref(lemma:3.1), we can further simplify $T_S$ and $T_W$ as the 
 \end{align}
 where $S(\mathbf Y; \boldsymbol{\theta}) = \nabla \ell_n(\boldsymbol{\theta})$ is the ordinary score function and $\hat I(\boldsymbol{\theta}) = \hat V_n(\boldsymbol{\theta})$ to emphasize its link with the information matrix $I(\boldsymbol{\theta})$. The last equality holds if $\hat{\boldsymbol{\theta}}$ is the global maximizer.
 
-## 3.4. Sketch of the proof of asymptotic normality
+## Sketch of the proof of asymptotic normality
 
 The following lemma states that $\nabla_1 Q_n(\boldsymbol{\theta}, \boldsymbol{\theta})$ is in fact equivalent to $\nabla\ell_n(\boldsymbol{\theta})/n$, and $\hat V_n(\boldsymbol{\theta}_0)$ is an unbiased estimator of the information matrix $I(\boldsymbol{\theta}_0)$.
 
@@ -232,7 +232,7 @@ $$
 and $I^{11}(\boldsymbol{\theta}_0)$, respectively.
 
 
-### 3.4.1. Score-type statistic
+### Score-type statistic
 Lemm \@ref(lemma:3.1) implies that it is sufficient to show that $\sqrt n S_n(\tilde{\boldsymbol{\theta}}, \lambda)$ asymptotically follows $N \left(0, \left[ I^{11}(\boldsymbol{\theta}_0) \right]^{-1} \right)$. Note again that 
 \begin{align*}
 	S_n(\tilde{\boldsymbol{\theta}}, \lambda)
@@ -273,7 +273,7 @@ The last equality is also from [@main] and is used without proof. This leads to 
 which ends our sketch.
 
 
-### 3.4.2. Wald-type statistic
+### Wald-type statistic
 Similar to the score-type statistic, it is sufficient to show that $\sqrt n \left( h(\hat{\boldsymbol{\theta}}, \lambda) - \boldsymbol{\theta}_{10} \right)$ asymptotically follows $N \left(0, I^{11}(\boldsymbol{\theta}_0) \right)$. Again, under the true $\boldsymbol{\theta}_0$,
 \begin{align*}
 	h(\hat{\boldsymbol{\theta}}, \lambda) - \boldsymbol{\theta}_{10}
@@ -324,8 +324,8 @@ This results in
 
 
 
-## 3.5. Regularity conditions
-For clarity, we did not mention what conditions are needed for asymptotic normality of $T_S$ and $T_W$ to hold. The following conditions \@ref(cond:1)~\@ref(cond:4) and assumption \@ref(assm:1) should be met.
+## Regularity conditions
+For clarity, we did not mention what conditions are needed for asymptotic normality of $T_S$ and $T_W$ to hold. The following conditions 1~4 and assumption 1 should be met.
 
 **Condition 1** (Parameter estimation).
 $$\|\hat{\boldsymbol{\theta}} - \boldsymbol{\theta}_0\|_1 = O_{\mathbb{P}}(\zeta^{EM}),$$
@@ -364,14 +364,14 @@ $$
 where $s_{W_0} = \|W_0\|_0$.
 
 
-We will check for specific models if these conditions are reasonable in practice. But before that, consider a low-dimensional case with no sparsity on parameters. It is a general fact proven in the paper that $\zeta^T \sim \sqrt{\log d / n}$. By the assumption \@ref(assm:1), this implies $s_{W_0} = o(\sqrt{n / \log d})$ which means that $\left[ I^{11}(\boldsymbol{\theta}_0) \right]_{-1}$ should be sparse with sparsity factor of $o(\sqrt{n / \log d})$. Since we assumed the low-dimensional case ($n >> d$), it allows $s_{W_0}$ to be larger than $d$. This means our no-sparsity assumption is valid in low-dimensional case.
+We will check for specific model if these conditions are reasonable in practice. But before that, consider a low-dimensional case with no sparsity on parameters. It is a general fact proven in the paper that $\zeta^T \sim \sqrt{\log d / n}$. By the assumption 1, this implies $s_{W_0} = o(\sqrt{n / \log d})$ which means that $\left[ I^{11}(\boldsymbol{\theta}_0) \right]_{-1}$ should be sparse with sparsity factor of $o(\sqrt{n / \log d})$. Since we assumed the low-dimensional case ($n >> d$), it allows $s_{W_0}$ to be larger than $d$. This means our no-sparsity assumption is valid in low-dimensional case.
 
 
-# 4. Application \& Numerical Results
-We check if regularity conditions are reasonable for the following three models in practice. To restrict the problem to what we covere in class, low-dimensionality and no sparsity is assumed. %Note that the assumption \@ref(assm:1) is, in most cases, safe to be deemed true for these models. 
-Numerical verification of asymptotic normality follows.
+# Application \& Numerical Results
+We check if regularity conditions are reasonable for the following model in practice. To restrict the problem to what we covere in class, low-dimensionality and no sparsity is assumed. Note that the assumption 1 is, in most cases, safe to be deemed true. Numerical verification of asymptotic normality follows.
 
-## 4.1. Gaussian mixture model
+<!-- ## 4.1. Gaussian mixture model -->
+## Model description
 Let $Y_1,\cdots,Y_n$ be IID random variables, $Z$ be a Rademacher random variable. The model is
 $$
 \mathbf Y = Z\boldsymbol{\beta}_0 + \mathbf V, \quad \mathbf V \sim N(\mathbf 0, \sigma^2 \mathbb{I}_d).
@@ -385,56 +385,227 @@ It is proved that if
 	\zeta^T &= \left(\|\boldsymbol{\beta}_0\|_\infty^2 + \sigma^2\right) / \sigma^2 \sqrt{ \frac{\log d}{n} }, \\
 	\zeta^L &= \left(\|\boldsymbol{\beta}_0\|_\infty^2 + \sigma^2\right)^{3/2} / \sigma^4 ( \log d + \log n )^{3/2},
 \end{align*}
-where $T = \left\lceil \frac{\log(C'R) - \log(\Delta^{GMM}\sqrt{\log d/n})}{Cr^2/2} \right\rceil$, $\Delta^{GMM} = (1+C'')\sqrt d \left(\|\boldsymbol{\beta}_0\|_\infty + \sigma\right)$, then all the conditions are met. To check the assumption \@ref(assm:1), plugging in $\zeta$'s gives the requirement $d \log d = o(n / \log n)$ for our non-sparse case. This implies for low-dimensional case where $d \log d = o(n / \log n)$, we can assure asymptotic normality of test statistics.
+where $T = \left\lceil \frac{\log(C'R) - \log(\Delta^{GMM}\sqrt{\log d/n})}{Cr^2/2} \right\rceil$, $\Delta^{GMM} = (1+C'')\sqrt d \left(\|\boldsymbol{\beta}_0\|_\infty + \sigma\right)$, then all the conditions are met. To check the assumption 1, plugging in $\zeta$'s gives the requirement $d \log d = o(n / \log n)$ for our non-sparse case. This implies for low-dimensional case where $d \log d = o(n / \log n)$, we can assure asymptotic normality of test statistics.
 
 
-
-## 4.2. Mixture of regression models
-For a random variable $Y \in \mathbb{R}$, Rademacher random variable $Z$ and a random vector $\mathbf X \sim N(\mathbf 0, \mathbb{I}_d)$, the model is
-$$
-Y = Z\mathbf X^T \boldsymbol{\beta}_0 + V, \quad V \sim N(0, \sigma^2).
-$$
-We assume that $\sigma^2$ is known, $\mathbf X$, $Z$ and $V$ are independent, and that each coordinate of $\mathbf x_i$'s are missing with probability $p_m$. Also assume that $\boldsymbol{\beta}_0 \ne 0$.
-
-It is proved that if we set
-\begin{align*}
-	\zeta^{EM} &= \sqrt d \Delta^{MR} \sqrt{ \frac{T \log d}{n} },\\
-	\zeta^G &= \max\left\{\|\boldsymbol{\beta}_0\|_2^2 + \sigma^2, 1, \sqrt d \|\boldsymbol{\beta}_0\|_2 \right\} \sqrt{ \frac{\log d}{n} },\\
-	\zeta^T &= (\log n + \log d) \left( (\log n + \log d) \|\boldsymbol{\beta}_0\|_1^2 + \sigma^2\right) / \sigma^2 \sqrt{ \frac{\log d}{n} }, \\
-	\zeta^L &= (\log n + \log d)^3 \left(\|\boldsymbol{\beta}_0\|_1 + \sigma\right)^{3} / \sigma^4,
-\end{align*}
-then all the conditions are met. By plugging in $\zeta$'s into the assumption, we get the requirement $d^6 (\log d)^8 = o\left(n / (\log n)^2 \right)$ under non-sparsity assumption. Compared to the $o(n / \log n)$ requirement from GMM, this smaller order might be an issue in practice.
-
-
-# 5. Discussions
-We believe the result we reviewed is significant in the following manner.
-
-- It is the first and the only attempt, as far as we know, to derive asymptotic normality of EM estimators. While previous research focused on computational convergence  rate and convergence guarantee of the global maximizer, this result focused further on statistical properties of possibly local maximizers.
-- It provides statistical properties of not only maximum likelihood estimators, but also local maximizer of likelihood function. 
-  - It is worth noting again that derivatives of Q-function successfully recovers score function and information matrix of incomplete data. As a result, the asymptotic distribution of EM estimator is surprizingly similar to that of MLE.
-  - Rather than being consistent, local maximizers tend to be asymptotically biased as much as $\frac 1 n \hat I^{-1}(\hat{\boldsymbol{\theta}}) S(\mathbf Y; \hat{\boldsymbol{\theta}})$ as shown in (\@ref(eq:2)).
-
-However, it needs attention in practice that for some models, regularity conditions for asymptotic normality might not be easy to be met. While the order requirement of the sample size $n$ compared to dimension $d$ is reasonable for Gaussian mixture model, for mixture of regression models it became exponentially large. Still, for the computational convergence guarantee that we did not covered here, required order of $n$ could be much lower with respect to $d$, which makes the algorithm applicable to most latent variable models.
-
-
-
-
+## Simulation
 
 ```{r warning = FALSE, message = FALSE, include = FALSE}
 library(tidyverse)
 ```
 
-# Simulation
+For simplicity, we focused on the full parameter case with $d=10$. Furthermore, to view asymptotic multivariate normality, we redefined score and wald-type statistics as the square of the corresponding ones introduced in previous section. That is,
+$$
+T_S = n S_n(\boldsymbol{\theta}_0, \lambda)^T\left\{
+	\hat V_n(\boldsymbol{\theta}_0)
+	\right\}^{-1} S_n(\boldsymbol{\theta}_0, \lambda),
+$$
+$$
+T_W = n \left( h(\hat{\boldsymbol{\theta}}, \lambda) - \boldsymbol{\theta}_0 \right)^T \left\{
+	\hat V_n(\hat{\boldsymbol{\theta}})
+	\right\} \left( h(\hat{\boldsymbol{\theta}}, \lambda) - \boldsymbol{\theta}_0 \right),
+$$
+where $S_n(\boldsymbol{\theta}_0,\lambda) = \nabla_1 Q_n(\boldsymbol{\theta}_0, \boldsymbol{\theta}_0)$, $\hat V_n(\boldsymbol{\theta}_0) = -\nabla^2_{1,1} Q_n(\boldsymbol{\theta}_0, \boldsymbol{\theta}_0) -\nabla^2_{1,2} Q_n(\boldsymbol{\theta}_0, \boldsymbol{\theta}_0)$, and $h(\hat{\boldsymbol{\theta}}) = \hat{\boldsymbol{\theta}} + \left\{ \hat V_n(\hat{\boldsymbol{\theta}}) \right\}^{-1} \nabla_1 Q_n(\hat{\boldsymbol{\theta}}, \hat{\boldsymbol{\theta}})$.
 
-```{r include = FALSE}
-set.seed(1)
-n <- 100; d <- 3; p <- 3; sigma_sq <- 1;
-Z <- matrix(data = sample(c(1, -1), size = n*p, replace = TRUE, prob = c(0.5, 0.5)), 
-            nrow = n, ncol = p)
-beta_star <- matrix(rnorm(n = p*d), nrow = p)
-V <- matrix(data = rnorm(n*d, mean = 0, sd = sqrt(sigma_sq)), nrow = n)
-Y <- Z %*% beta_star + V
+We first set the case with a Gaussian mixture model with true parameter $\boldsymbol\beta_0 = (2,2,\cdots,2)^T$. We assume that the variance of random error $V$ is known to be 1. In this case, it can be derived that
+$$
+Q_n(\boldsymbol\beta', \boldsymbol\beta) = -\frac 1 {2n} \sum_{i=1}^n \omega_{\boldsymbol\beta}(\mathbf y_i) \| \mathbf y_i - \boldsymbol \beta' \|_2^2 + \left[ 1 - \omega_{\boldsymbol\beta}(\mathbf y_i)\right] \|\mathbf y_i - \boldsymbol\beta'\|_2^2.
+$$
+Differentiate it by $\boldsymbol\beta'$ and set it to zero gives the maximizer as
+$$
+\arg\max_{\boldsymbol\beta'} Q_n(\boldsymbol\beta', \boldsymbol\beta) = \frac 1 {2n} \sum_{i=1}^n \omega_{\boldsymbol\beta}(\mathbf y_i)\mathbf y_i - \frac 1 n \sum_{i=1}^n \mathbf y_i
+$$
+Further computation gives
+$$
+\hat V_n(\boldsymbol\beta) = \mathbb I_d - \frac 1 n \sum_{i=1}^n \nu_{\boldsymbol\beta}(\mathbf y_i) \mathbf y_i \mathbf y_i^T,
+$$
+$$
+\nu_{\boldsymbol\beta}(\mathbf y_i) = \frac 4 { \sigma^2 \left\{ 1 + \exp(-2\boldsymbol\beta^T\mathbf y_i / \sigma^2) \right\} \left\{ 1 + \exp(2\boldsymbol\beta^T\mathbf y_i / \sigma^2) \right\} }.
+$$
+The EM algorithm for the GMM and functions to compute score and Wald-type test statistic is defined as follows.
+
+```{r}
+# supp_func <- function(beta, s) {
+#   largest <- sort(abs(beta)) %>% tail(s)
+#   idx <- which(abs(beta) %in% largest)
+#   return(idx)
+# }
+# trunc_func <- function(beta, S) {
+#   zero_idx <- setdiff(1:length(beta), S)
+#   beta[zero_idx] <- 0
+#   return(beta)
+# }
+omega_func <- function(beta, y, sigma_sq) {
+  value <- 1 / (1 + exp(-(beta %*% y)/sigma_sq))
+  return(value)
+}
+
+high_EM_GMM <- function(s, n_iter, beta_init, Y) {
+  d <- ncol(Y); n <- nrow(Y)
+  beta_0 <- beta_init
+  #S_init <- supp_func(beta_init, s); beta_0 <- trunc_func(beta_init, S_init);
+  
+  for(t in 1:n_iter) {
+    # M-step
+    Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
+    omega_val <- lapply(Y_row_list, FUN = omega_func, beta = beta_0, sigma_sq = sigma_sq)
+    
+    omega_y <- mapply(function(x, y) x * y, x = omega_val, y = Y_row_list)
+    first_term <- 2 * apply(omega_y, MARGIN = 1, FUN = mean)
+    beta_temp <- first_term - apply(Y, 2, mean)
+    
+    # # T-step
+    # S_temp <- supp_func(beta_temp, s)
+    # beta_new <- trunc_func(beta = beta_temp, S = S_temp)
+    beta_new = beta_temp  # we assume non-sparse case.
+    
+    # Update value
+    beta_0 <- beta_new
+  }
+  return(beta_new)
+}
+
+S_n_hat <- function(beta, Y, sigma_sq) {
+  d <- ncol(Y)
+  Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
+  omega_val <- lapply(Y_row_list, FUN = omega_func, beta = beta, sigma_sq = sigma_sq)
+  omega_val2 <- lapply(omega_val, FUN = function(x) (2*x - 1) %>% as.numeric)
+  omega_y_2 <- mapply(function(x, y) x * y, x = omega_val2, y = Y_row_list)
+  first_deriv_Q <- apply(omega_y_2, MARGIN = 1, FUN = mean) - beta
+  
+  return(first_deriv_Q)
+}
+
+v_by <- function(beta, Y, sigma_sq){
+  Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
+  
+  f_denom1 <- function(beta, y, sigma_sq) {
+    return(1 + exp(-2 * (beta %*% y)/sigma_sq))
+  }
+
+  f_denom2 <- function(beta, y, sigma_sq) {
+    return(1 + exp(2 * (beta %*% y)/sigma_sq))
+  }
+  denom1 = lapply(Y_row_list, FUN = f_denom1, beta = beta, sigma_sq = sigma_sq)
+  denom2 = lapply(Y_row_list, FUN = f_denom2, beta = beta, sigma_sq = sigma_sq)
+  denom = mapply(function(x, y) x * y, x = denom1, y = denom2)
+  num = 4 / sigma_sq
+  
+  # f_denom <- function(beta, y, sigma_sq) {
+  #   return( (1 + exp(-(beta %*% y)/sigma_sq))^(-2) * exp(-(beta %*% y)/sigma_sq) * y/sigma_sq * (-1/sigma_sq) )
+  # }
+  # 
+  # wby = lapply(Y_row_list, FUN = f_denom, beta = beta, sigma_sq = sigma_sq)
+  
+  return(num / denom)
+  # return(wby)
+}
+
+V_n_hat <- function(beta, Y, sigma_sq){
+  d <- ncol(Y)
+  
+  v = v_by(beta, Y, sigma_sq)
+  
+  Y_row_list <- lapply(seq_len(nrow(Y)), function(i) Y[i,])
+  
+  # wbyyt_list <- mapply(x = Y_row_list, w = v, FUN = function(x, w) (2*w) %*% t(x), SIMPLIFY = F)
+  # wbyyt_avg <- Reduce("+", wbyyt_list) / length(wbyyt_list)
+  yyt_list <- mapply(x = Y_row_list, FUN = function(x) x %*% t(x), SIMPLIFY = F)
+
+  vyyt_list <- mapply(FUN = function(x, y) x * y, x = v, y = yyt_list, SIMPLIFY = F)
+
+  avg_vyyt <- Reduce("+", vyyt_list) / length(vyyt_list)
+  
+  # return( diag(1, d) - wbyyt_avg  )
+  return( diag(1, d) - avg_vyyt  )
+}
+
 ```
+
+Finally, we run the simulation.
+
+```{r warning = FALSE}
+set.seed(2)
+
+T_S_seq <- c()
+T_W_seq <- c()
+for(simul in 1:100) {
+  n <- 100; d <- 10; sigma_sq <- 1;
+  Z_col <- matrix(sample(c(1, -1), size = n, replace = TRUE, prob = c(0.5, 0.5)), nrow = n)
+  beta_star <- matrix(rep(2, d))#rnorm(n = d, mean = 1, sd = 0.1))
+  V <- matrix(rnorm(n = n*d, mean = 0, sd = sqrt(sigma_sq)), nrow = n)
+  Z <- Z_col
+  for(j in 2:d) {
+    Z <- cbind(Z, Z_col)
+  }
+  beta_mat <- t(abs(beta_star))
+  for(i in 2:n) {
+    beta_mat <- rbind(beta_mat, t(beta_star))
+  }
+  Y <- Z * beta_mat + V
+  
+  beta_init <- runif(d, min = 1, max = 3)
+  est <- high_EM_GMM(s = d, n_iter = 50, beta_init = beta_init, Y = Y)
+  beta_star <- t(beta_star)
+  est <- abs(est)
+  
+  V_n <- V_n_hat(beta = beta_star, Y, sigma_sq)
+  S_n <- S_n_hat(beta = beta_star, Y, sigma_sq)
+  V_n_est <- V_n_hat(beta = est, Y, sigma_sq)
+  S_n_est <- S_n_hat(beta = est, Y, sigma_sq)
+    
+  T_S <- n * S_n %*% solve(V_n) %*% t(S_n)
+  h_beta <- est + solve(V_n_est) %*% matrix(S_n_est)
+  T_W <- n * (t(h_beta) - beta_star) %*% V_n_est %*% (h_beta - t(beta_star))
+  
+  T_S_seq <- c(T_S_seq, T_S)
+  T_W_seq <- c(T_W_seq, T_W)
+}
+```
+
+
+Both score and Wald-type statistics are expected to follow Chi-squared distribution with degrees of freedom equal to 10. The following histograms empirically shows that our expectation is valid.
+
+```{r}
+hist(T_S_seq, breaks = 50, freq = FALSE, xlab = "Score-type test statistic")
+curve(dchisq(x, df = 10), from = 0, to = 200, n = 5000, col= 'orange', lwd=2, add = T)
+```
+
+
+```{r}
+hist(T_W_seq, breaks = 50, freq = FALSE, xlab = "Wald-type test statistic")
+curve(dchisq(x, df = 10), from = 0, to = 200, n = 5000, col= 'orange', lwd=2, add = T)
+```
+
+
+
+<!-- ## 4.2. Mixture of regression models -->
+<!-- For a random variable $Y \in \mathbb{R}$, Rademacher random variable $Z$ and a random vector $\mathbf X \sim N(\mathbf 0, \mathbb{I}_d)$, the model is -->
+<!-- $$ -->
+<!-- Y = Z\mathbf X^T \boldsymbol{\beta}_0 + V, \quad V \sim N(0, \sigma^2). -->
+<!-- $$ -->
+<!-- We assume that $\sigma^2$ is known, $\mathbf X$, $Z$ and $V$ are independent, and that each coordinate of $\mathbf x_i$'s are missing with probability $p_m$. Also assume that $\boldsymbol{\beta}_0 \ne 0$. -->
+
+<!-- It is proved that if we set -->
+<!-- \begin{align*} -->
+<!-- 	\zeta^{EM} &= \sqrt d \Delta^{MR} \sqrt{ \frac{T \log d}{n} },\\ -->
+<!-- 	\zeta^G &= \max\left\{\|\boldsymbol{\beta}_0\|_2^2 + \sigma^2, 1, \sqrt d \|\boldsymbol{\beta}_0\|_2 \right\} \sqrt{ \frac{\log d}{n} },\\ -->
+<!-- 	\zeta^T &= (\log n + \log d) \left( (\log n + \log d) \|\boldsymbol{\beta}_0\|_1^2 + \sigma^2\right) / \sigma^2 \sqrt{ \frac{\log d}{n} }, \\ -->
+<!-- 	\zeta^L &= (\log n + \log d)^3 \left(\|\boldsymbol{\beta}_0\|_1 + \sigma\right)^{3} / \sigma^4, -->
+<!-- \end{align*} -->
+<!-- then all the conditions are met. By plugging in $\zeta$'s into the assumption, we get the requirement $d^6 (\log d)^8 = o\left(n / (\log n)^2 \right)$ under non-sparsity assumption. Compared to the $o(n / \log n)$ requirement from GMM, this smaller order might be an issue in practice. -->
+
+
+# Discussions
+We believe the result we reviewed is significant in the following manner.
+
+- It is the first and the only attempt, as far as we know, to derive asymptotic normality of EM estimators. While previous research focused on computational convergence  rate and convergence guarantee of the global maximizer, this result focused further on statistical properties of possibly local maximizers.
+- It provides statistical properties of not only maximum likelihood estimators, but also local maximizer of likelihood function. 
+  - It is worth noting again that derivatives of Q-function successfully recovers score function and information matrix of incomplete data. As a result, the asymptotic distribution of EM estimator is surprizingly similar to that of MLE.
+  - Rather than being consistent, local maximizers tend to be asymptotically biased as much as $\frac 1 n \hat I^{-1}(\hat{\boldsymbol{\theta}}) S(\mathbf Y; \hat{\boldsymbol{\theta}})$ as shown in \@ref(eq:2).
+
+However, it needs attention in practice that for some models, regularity conditions for asymptotic normality might not be easy to be met. While the order requirement of the sample size $n$ compared to dimension $d$ is reasonable for Gaussian mixture model, for complex model such as a mixture of regression models, though we did not cover, it became exponentially large. Still, for the computational convergence guarantee that we did not covered here, required order of $n$ could be much lower with respect to $d$, which makes the algorithm applicable to most latent variable models.
+
 
 
 # References
